@@ -22,6 +22,11 @@ contract HuffbitsTest is Test {
     /// @dev Ensure that a single bit can be set.
     function testBitMask() public {
         assertEq(huffbits.singleBitMask(0x0), 0x1);
+        assertEq(huffbits.singleBitMask(0x1), 0x2);
+        assertEq(huffbits.singleBitMask(0x8), 0x100);
+        assertEq(huffbits.singleBitMask(0x8), 0x100);
+        assertEq(huffbits.singleBitMask(0x20), 0x100000000);
+        assertEq(huffbits.singleBitMask(0x3F), 0x8000000000000000);
     }
 }
 
