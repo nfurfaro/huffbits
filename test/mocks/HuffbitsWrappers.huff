@@ -1,0 +1,21 @@
+
+#define macro SINGLE_BIT_MASK_WRAPPER() = {
+    0x04 calldataload
+    SINGLE_BIT_MASK()
+    0x00 mstore
+    0x20 0x00 return
+}
+
+
+
+#define macro MAIN() = {
+    0x00 calldataload 0xE0 shr
+    dup1 __FUNC_SIG(singleBitMask) eq singleBitMask jumpi
+
+
+    0x00 0x00 revert
+
+    singleBitMask:
+        SINGLE_BIT_MASK_WRAPPER()
+
+}

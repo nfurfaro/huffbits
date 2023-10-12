@@ -1,0 +1,19 @@
+/// @title Huffbits
+/// @notice SPDX-License-Identifier: Unlicencse
+/// @author furnic <https://github.com/nfurfaro>
+/// @notice Library of utils for bitwise operations
+/// @notice Ported from Sway-Bits: <https://github.com/nfurfaro/sway-bits>
+
+
+// Interface
+#define function singleBitMask(uint256) pure returns(uint256)
+
+#define macro SINGLE_BIT_MASK() = takes(1) returns(1) {
+    // input stack          // [shift]
+    0x01                    // [1, shift]
+    swap1                   // [shift, 1]
+    shl                     // [shifted]
+    0x00                    // [offset, shifted]
+    mstore                  // []
+    0x20 0x00 return
+}
