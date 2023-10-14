@@ -62,6 +62,14 @@ contract HuffbitsTest is Test {
 
     function testMultiMask() public {
         assertEq(huffbits.multiMask(1), 1);
+        assertEq(huffbits.multiMask(2), 3);
+        assertEq(huffbits.multiMask(3), 7);
+        assertEq(huffbits.multiMask(4), 15);
+        assertEq(huffbits.multiMask(5), 31);
+        assertEq(huffbits.multiMask(6), 63);
+        assertEq(huffbits.multiMask(7), 127);
+        assertEq(huffbits.multiMask(8), 255);
+
     }
 }
 
