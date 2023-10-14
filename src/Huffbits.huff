@@ -57,7 +57,7 @@ pub fn b256_multimask(n: u64) -> b256 {
     0x00 0x00 revert
 
     continue:     //                           [n]
-        [max]     //                      [max, n]
+        [MAX]     //                      [max, n]
         dup1      //                 [max, max, n]
         dup3      //              [n, max, max, n]
         0x04      //           [4, n, max, max, n]
