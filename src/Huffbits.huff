@@ -7,31 +7,42 @@
 
 // Interface
 #define function singleBitMask(uint256) pure returns(uint256)
+// #define function multiMask(uint256) pure returns(uint256)
 #define function toggleBit(uint256, uint256) pure returns(uint256)
 #define function queryBit(uint256, uint256) pure returns(uint256)
 
 /// Get a bitmask with a single `1` at the nth position.
-#define macro SINGLE_BIT_MASK() = takes(1) returns(1) {
+#define macro SINGLE_BITMASK() = takes(1) returns(1) {
     // input stack          // [shift]
     0x01                    // [1, shift]
     swap1                   // [shift, 1]
     shl                     // [shifted]
 }
 
+/// Get a bitmask of n ones.
+// #define macro MULTIMASK() = takes(1) returns(1) {
+//     // input stack                            [n]
+//     0x01                    //             [1, n]
+//     swap1                   //             [n, 1]
+//     dup2                    //          [n, 1, 1]
+//     shl                     //       [shifted, 1]
+//     sub                     //           [result]
+// }
+
 /// Flip the nth bit in a bitmap.
 #define macro TOGGLE_BIT() = takes(2) returns(1) {
     // input stack         // [position, bitmap]
-    SINGLE_BIT_MASK()      // [mask, bitmap]
+    SINGLE_BITMASK()      // [mask, bitmap]
     xor                    // [result]
 }
 
 /// Given a bitmap, check whether a bit is set.
 #define macro QUERY_BIT() = takes(2) returns(1) {
-    // input stack         // [bit, bitmap] (0,1)
-    dup1                   // [bit, bit, bitmap] (0,0,1)
-    swap2                  // [bitmap, bit, bit] (1,0,0)
-    swap1                  // [bit, bitmap, bit] (0,1,0)
-    SINGLE_BIT_MASK()      // [mask, bitmap, bit]
+    // input stack         // [bit, bitmap]
+    dup1                   // [bit, bit, bitmap]
+    swap2                  // [bitmap, bit, bit]
+    swap1                  // [bit, bitmap, bit]
+    SINGLE_BITMASK()      // [mask, bitmap, bit]
     and                    // [and, bit]
     swap1                  // [bit, and]
     shr                    // [shifted]

@@ -7,6 +7,7 @@ import "forge-std/console.sol";
 
 interface Huffbits {
     function singleBitMask(uint256) external pure returns(uint256);
+    // function multiMask(uint256) external pure returns(uint256);
     function toggleBit(uint256, uint256) external pure returns(uint256);
     function queryBit(uint256, uint256) external pure returns(uint256);
 }
@@ -37,15 +38,30 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.toggleBit(0x0, 0x0), 0x1);
         assertEq(huffbits.toggleBit(0x0, 0x1), 0x2);
         assertEq(huffbits.toggleBit(0x0, 42), 4398046511104);
-    }
-
-    function testToggleBit2() public {
         assertEq(huffbits.toggleBit(1, 0), 0);
+        assertEq(huffbits.toggleBit(2, 0), 3);
+        assertEq(huffbits.toggleBit(2, 1), 0);
+        assertEq(huffbits.toggleBit(1024, 0), 1025);
     }
 
     function testQueryBit() public {
+        uint256 max = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
         assertEq(huffbits.queryBit(0, 0), 0);
+        assertEq(huffbits.queryBit(0, 1), 0);
+        assertEq(huffbits.queryBit(0, 64), 0);
+        assertEq(huffbits.queryBit(0, 255), 0);
         assertEq(huffbits.queryBit(1, 0), 1);
+        assertEq(huffbits.queryBit(1025, 0), 1);
+        assertEq(huffbits.queryBit(1025, 10), 1);
+        assertEq(huffbits.queryBit(1025, 11), 0);
+        assertEq(huffbits.queryBit(max, 0), 1);
+        assertEq(huffbits.queryBit(max, 64), 1);
+        assertEq(huffbits.queryBit(max, 128), 1);
+        assertEq(huffbits.queryBit(max, 255), 1);
     }
+
+    // function testMultiMask() public {
+    //     assertEq(huffbits.multiMask(1), 1);
+    // }
 }
 
