@@ -16,6 +16,7 @@ interface Huffbits {
 contract HuffbitsTest is Test {
     /// @dev Address of the Huffbits contract
     Huffbits public huffbits;
+    uint constant MAX = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function setUp() public {
         string memory wrappers = vm.readFile("test/mocks/HuffbitsWrappers.huff");
@@ -45,7 +46,6 @@ contract HuffbitsTest is Test {
     }
 
     function testQueryBit() public {
-        uint256 max = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
         assertEq(huffbits.queryBit(0, 0), 0);
         assertEq(huffbits.queryBit(0, 1), 0);
         assertEq(huffbits.queryBit(0, 64), 0);
@@ -54,13 +54,14 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.queryBit(1025, 0), 1);
         assertEq(huffbits.queryBit(1025, 10), 1);
         assertEq(huffbits.queryBit(1025, 11), 0);
-        assertEq(huffbits.queryBit(max, 0), 1);
-        assertEq(huffbits.queryBit(max, 64), 1);
-        assertEq(huffbits.queryBit(max, 128), 1);
-        assertEq(huffbits.queryBit(max, 255), 1);
+        assertEq(huffbits.queryBit(MAX, 0), 1);
+        assertEq(huffbits.queryBit(MAX, 64), 1);
+        assertEq(huffbits.queryBit(MAX, 128), 1);
+        assertEq(huffbits.queryBit(MAX, 255), 1);
     }
 
     function testMultiMask() public {
+        assertEq(huffbits.multiMask(0), 0);
         assertEq(huffbits.multiMask(1), 1);
         assertEq(huffbits.multiMask(2), 3);
         assertEq(huffbits.multiMask(3), 7);
@@ -69,7 +70,8 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.multiMask(6), 63);
         assertEq(huffbits.multiMask(7), 127);
         assertEq(huffbits.multiMask(8), 255);
-
+        assertEq(huffbits.multiMask(32), 4294967295);
+        assertEq(huffbits.multiMask(256), MAX);
     }
 }
 
