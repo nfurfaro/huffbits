@@ -6,13 +6,14 @@ import "forge-std/Test.sol";
 import "forge-std/console.sol";
 
 interface Huffbits {
-    function singleBitMask(uint256) external pure returns(uint256);
+    function bitMask(uint256) external pure returns(uint256);
     function multiMask(uint256) external pure returns(uint256);
     function nibbleMask(uint256) external pure returns(uint256);
     function toggleBit(uint256, uint256) external pure returns(uint256);
     function queryBit(uint256, uint256) external pure returns(uint256);
     function setBit(uint256, uint256) external pure returns(uint256);
     function clearBit(uint256, uint256) external pure returns(uint256);
+    function clearNibble(uint256, uint256) external pure returns(uint256);
 }
 
 
@@ -27,15 +28,15 @@ contract HuffbitsTest is Test {
     }
 
     /// @dev Ensure that a single bit can be set.
-    function testSingleBitMask() public {
-        assertEq(huffbits.singleBitMask(0x0), 0x1);
-        assertEq(huffbits.singleBitMask(0x1), 0x2);
-        assertEq(huffbits.singleBitMask(0x2), 0x4);
-        assertEq(huffbits.singleBitMask(0x3), 0x8);
-        assertEq(huffbits.singleBitMask(0x8), 0x100);
-        assertEq(huffbits.singleBitMask(0x8), 0x100);
-        assertEq(huffbits.singleBitMask(0x20), 0x100000000);
-        assertEq(huffbits.singleBitMask(0x3F), 0x8000000000000000);
+    function testBitMask() public {
+        assertEq(huffbits.bitMask(0x0), 0x1);
+        assertEq(huffbits.bitMask(0x1), 0x2);
+        assertEq(huffbits.bitMask(0x2), 0x4);
+        assertEq(huffbits.bitMask(0x3), 0x8);
+        assertEq(huffbits.bitMask(0x8), 0x100);
+        assertEq(huffbits.bitMask(0x8), 0x100);
+        assertEq(huffbits.bitMask(0x20), 0x100000000);
+        assertEq(huffbits.bitMask(0x3F), 0x8000000000000000);
     }
 
     function testToggleBit() public {
@@ -112,5 +113,15 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.nibbleMask(55), 0xFFFFFFFF0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
         assertEq(huffbits.nibbleMask(63), 0x0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     }
+
+    function testClearNibble() public {
+        assertEq(huffbits.clearNibble(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF, 0), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0);
+        assertEq(huffbits.clearNibble(1, 0), 0);
+
+    }
+
+    // writeNibble
+    // queryNibble
+
 }
 

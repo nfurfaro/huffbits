@@ -1,7 +1,7 @@
 
-#define macro SINGLE_BITMASK_WRAPPER() = {
+#define macro BITMASK_WRAPPER() = {
     0x04 calldataload
-    SINGLE_BITMASK()
+    BITMASK()
     0x00 mstore
     0x20 0x00 return
 }
@@ -29,44 +29,53 @@
 }
 
 #define macro QUERY_BIT_WRAPPER() = {
-    0x04 calldataload  //   [1]
-    0x24 calldataload  // [0,1]
-    QUERY_BIT()        // [set?]
-    0x00 mstore        // [],<set?>
-    0x20 0x00 return   // [],<>
+    0x04 calldataload  //      [arg1]
+    0x24 calldataload  //[arg2, arg1]
+    QUERY_BIT()        //      [set?]
+    0x00 mstore
+    0x20 0x00 return
 }
 
 #define macro SET_BIT_WRAPPER() = {
-    0x04 calldataload  //   [1]
-    0x24 calldataload  // [0,1]
-    SET_BIT()        // [set?]
-    0x00 mstore        // [],<set?>
-    0x20 0x00 return   // [],<>
+    0x04 calldataload//      [arg1]
+    0x24 calldataload//[arg2, arg1]
+    SET_BIT()        //       [set]
+    0x00 mstore
+    0x20 0x00 return
 }
 
 #define macro CLEAR_BIT_WRAPPER() = {
-    0x04 calldataload  //   [1]
-    0x24 calldataload  // [0,1]
-    CLEAR_BIT()        // [set?]
-    0x00 mstore        // [],<set?>
-    0x20 0x00 return   // [],<>
+    0x04 calldataload  //      [arg1]
+    0x24 calldataload  //[arg2, arg1]
+    CLEAR_BIT()        //   [cleared]
+    0x00 mstore
+    0x20 0x00 return
+}
+
+#define macro CLEAR_NIBBLE_WRAPPER() = {
+    0x04 calldataload  //         [arg1]
+    0x24 calldataload  //   [arg2, arg1]
+    CLEAR_NIBBLE()        //   [cleared]
+    0x00 mstore
+    0x20 0x00 return
 }
 
 #define macro MAIN() = {
     0x00 calldataload 0xE0 shr
-    dup1 __FUNC_SIG(singleBitMask) eq singleBitMask jumpi
+    dup1 __FUNC_SIG(bitMask) eq bitMask jumpi
     dup1 __FUNC_SIG(multiMask) eq multiMask jumpi
     dup1 __FUNC_SIG(nibbleMask) eq nibbleMask jumpi
     dup1 __FUNC_SIG(toggleBit) eq toggleBit jumpi
     dup1 __FUNC_SIG(queryBit) eq queryBit jumpi
     dup1 __FUNC_SIG(setBit) eq setBit jumpi
     dup1 __FUNC_SIG(clearBit) eq clearBit jumpi
+    dup1 __FUNC_SIG(clearNibble) eq clearNibble jumpi
 
 
     0x00 0x00 revert
 
-    singleBitMask:
-        SINGLE_BITMASK_WRAPPER()
+    bitMask:
+        BITMASK_WRAPPER()
     multiMask:
         MULTIMASK_WRAPPER()
     nibbleMask:
@@ -79,5 +88,7 @@
         SET_BIT_WRAPPER()
     clearBit:
         CLEAR_BIT_WRAPPER()
+    clearNibble:
+        CLEAR_NIBBLE_WRAPPER()
 
 }

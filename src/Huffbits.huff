@@ -6,18 +6,19 @@
 
 
 // Interface
-#define function singleBitMask(uint256) pure returns(uint256)
+#define function bitMask(uint256) pure returns(uint256)
 #define function multiMask(uint256) pure returns(uint256)
 #define function nibbleMask(uint256) pure returns(uint256)
 #define function toggleBit(uint256, uint256) pure returns(uint256)
 #define function queryBit(uint256, uint256) pure returns(uint256)
 #define function setBit(uint256, uint256) pure returns(uint256)
 #define function clearBit(uint256, uint256) pure returns(uint256)
+#define function clearNibble(uint256, uint256) pure returns(uint256)
 
 #define constant MAX = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
 /// Get a bitmask with a single `1` at the nth position.
-#define macro SINGLE_BITMASK() = takes(1) returns(1) {
+#define macro BITMASK() = takes(1) returns(1) {
     // input stack          //                 [shift]
     0x01                    //              [1, shift]
     swap1                   //              [shift, 1]
@@ -80,7 +81,7 @@ pub fn b256_multimask(n: u64) -> b256 {
 /// Flip the nth bit in a bitmap.
 #define macro TOGGLE_BIT() = takes(2) returns(1) {
     // input stack          //       [bit, bitmap]
-    SINGLE_BITMASK()        //      [mask, bitmap]
+    BITMASK()        //      [mask, bitmap]
     xor                     //            [result]
 }
 
@@ -90,7 +91,7 @@ pub fn b256_multimask(n: u64) -> b256 {
     dup1                   //  [bit, bit, bitmap]
     swap2                  //  [bitmap, bit, bit]
     swap1                  //  [bit, bitmap, bit]
-    SINGLE_BITMASK()       // [mask, bitmap, bit]
+    BITMASK()       // [mask, bitmap, bit]
     and                    //          [and, bit]
     swap1                  //          [bit, and]
     shr                    //           [shifted]
@@ -111,5 +112,12 @@ pub fn b256_multimask(n: u64) -> b256 {
     [MAX]                         // [full_map, bit, bitmap]
     swap1              // [bit, full_map, bitmap]
     TOGGLE_BIT()       //          [mask, bitmap]
+    and
+}
+
+/// Given a bitmap, clear a nibble if set, otherwise return the original bitmap.
+#define macro CLEAR_NIBBLE() = takes(2) returns(1) {
+    // input stack     //            [index, bitmap]
+    NIBBLEMASK()       //             [mask, bitmap]
     and
 }
