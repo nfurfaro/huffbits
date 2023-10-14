@@ -8,6 +8,7 @@ import "forge-std/console.sol";
 interface Huffbits {
     function singleBitMask(uint256) external pure returns(uint256);
     function toggleBit(uint256, uint256) external pure returns(uint256);
+    function queryBit(uint256, uint256) external pure returns(uint256);
 }
 
 
@@ -35,6 +36,16 @@ contract HuffbitsTest is Test {
     function testToggleBit() public {
         assertEq(huffbits.toggleBit(0x0, 0x0), 0x1);
         assertEq(huffbits.toggleBit(0x0, 0x1), 0x2);
+        assertEq(huffbits.toggleBit(0x0, 42), 4398046511104);
+    }
+
+    function testToggleBit2() public {
+        assertEq(huffbits.toggleBit(1, 0), 0);
+    }
+
+    function testQueryBit() public {
+        assertEq(huffbits.queryBit(0, 0), 0);
+        assertEq(huffbits.queryBit(1, 0), 1);
     }
 }
 

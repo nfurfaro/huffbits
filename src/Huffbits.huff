@@ -8,6 +8,7 @@
 // Interface
 #define function singleBitMask(uint256) pure returns(uint256)
 #define function toggleBit(uint256, uint256) pure returns(uint256)
+#define function queryBit(uint256, uint256) pure returns(uint256)
 
 /// Get a bitmask with a single `1` at the nth position.
 #define macro SINGLE_BIT_MASK() = takes(1) returns(1) {
@@ -15,9 +16,6 @@
     0x01                    // [1, shift]
     swap1                   // [shift, 1]
     shl                     // [shifted]
-    0x00                    // [offset, shifted]
-    mstore                  // []
-    0x20 0x00 return
 }
 
 /// Flip the nth bit in a bitmap.
@@ -25,6 +23,16 @@
     // input stack         // [position, bitmap]
     SINGLE_BIT_MASK()      // [mask, bitmap]
     xor                    // [result]
-    0x00 mstore            // []
-    0x20 0x00 return
+}
+
+/// Given a bitmap, check whether a bit is set.
+#define macro QUERY_BIT() = takes(2) returns(1) {
+    // input stack         // [bit, bitmap] (0,1)
+    dup1                   // [bit, bit, bitmap] (0,0,1)
+    swap2                  // [bitmap, bit, bit] (1,0,0)
+    swap1                  // [bit, bitmap, bit] (0,1,0)
+    SINGLE_BIT_MASK()      // [mask, bitmap, bit]
+    and                    // [and, bit]
+    swap1                  // [bit, and]
+    shr                    // [shifted]
 }

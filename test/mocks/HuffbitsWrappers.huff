@@ -14,20 +14,30 @@
     0x20 0x00 return
 }
 
+#define macro QUERY_BIT_WRAPPER() = {
+    0x04 calldataload  //   [1]
+    0x24 calldataload  // [0,1]
+    QUERY_BIT()        // [set?]
+    0x00 mstore        // [],<set?>
+    0x20 0x00 return   // [],<>
+}
+
 
 
 #define macro MAIN() = {
     0x00 calldataload 0xE0 shr
     dup1 __FUNC_SIG(singleBitMask) eq singleBitMask jumpi
     dup1 __FUNC_SIG(toggleBit) eq toggleBit jumpi
+    dup1 __FUNC_SIG(queryBit) eq queryBit jumpi
 
 
     0x00 0x00 revert
 
     singleBitMask:
         SINGLE_BIT_MASK_WRAPPER()
-
     toggleBit:
         TOGGLE_BIT_WRAPPER()
+    queryBit:
+        QUERY_BIT_WRAPPER()
 
 }
