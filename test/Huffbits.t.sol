@@ -102,6 +102,8 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.clearBit(0x37DDFDDBBDDFBF7C, 14), 0x37DDFDDBBDDFBF7C);
     }
 
-    function testNibbleMask() public {}
+    function testNibbleMask() public {
+        assertEq(huffbits.nibbleMask(3), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFF);
+    }
 }
 

@@ -49,9 +49,9 @@ pub fn b256_multimask(n: u64) -> b256 {
 */
 #define macro NIBBLEMASK() = takes(1) returns(1) {
     // input stack          //                 [n]
-    dup1                    //              [n, n]
     // enforce n < 64
-    0x40                    //          [64, n, n]
+    0x40                    //             [64, n]
+    dup2                    //          [n, 64, n]
     lt                      //            [lt?, n]
     continue jumpi
     0x00 0x00 revert
@@ -59,7 +59,7 @@ pub fn b256_multimask(n: u64) -> b256 {
     continue:     //                           [n]
         [MAX]     //                      [max, n]
         dup1      //                 [max, max, n]
-        dup3      //              [n, max, max, n]
+        dup3      //              [n, max, max, n] <- can use swap instead!
         0x04      //           [4, n, max, max, n]
         mul       //           [prod, max, max, n]
         0x04      //        [4, prod, max, max, n]
@@ -67,7 +67,7 @@ pub fn b256_multimask(n: u64) -> b256 {
         shl       //               [mask1, max, n]
         swap1     //               [max, mask1, n]
         0x04      //            [4, max, mask1, n]
-        dup3      //         [n, 4, max, mask1, n]
+        dup4      //         [n, 4, max, mask1, n]
         mul       //         [prod, max, mask1, n]
         0x100     //    [256, prod, max, mask1, n]
         sub       //         [diff, max, mask1, n]
