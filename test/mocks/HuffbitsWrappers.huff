@@ -13,6 +13,13 @@
     0x20 0x00 return
 }
 
+#define macro NIBBLEMASK_WRAPPER() = {
+    0x04 calldataload
+    NIBBLEMASK()
+    0x00 mstore
+    0x20 0x00 return
+}
+
 #define macro TOGGLE_BIT_WRAPPER() = {
     0x04 calldataload
     0x24 calldataload
@@ -49,6 +56,7 @@
     0x00 calldataload 0xE0 shr
     dup1 __FUNC_SIG(singleBitMask) eq singleBitMask jumpi
     dup1 __FUNC_SIG(multiMask) eq multiMask jumpi
+    dup1 __FUNC_SIG(nibbleMask) eq nibbleMask jumpi
     dup1 __FUNC_SIG(toggleBit) eq toggleBit jumpi
     dup1 __FUNC_SIG(queryBit) eq queryBit jumpi
     dup1 __FUNC_SIG(setBit) eq setBit jumpi
@@ -61,6 +69,8 @@
         SINGLE_BITMASK_WRAPPER()
     multiMask:
         MULTIMASK_WRAPPER()
+    nibbleMask:
+        NIBBLEMASK_WRAPPER()
     toggleBit:
         TOGGLE_BIT_WRAPPER()
     queryBit:
