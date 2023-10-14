@@ -59,7 +59,7 @@ pub fn b256_multimask(n: u64) -> b256 {
     continue:     //                           [n]
         [MAX]     //                      [max, n]
         dup1      //                 [max, max, n]
-        dup3      //              [n, max, max, n] <- can use swap instead!
+        dup3      //              [n, max, max, n]
         0x04      //           [4, n, max, max, n]
         mul       //           [prod, max, max, n]
         0x04      //        [4, prod, max, max, n]
