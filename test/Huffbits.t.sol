@@ -73,5 +73,7 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.multiMask(32), 4294967295);
         assertEq(huffbits.multiMask(256), MAX);
     }
+
+    function testSetBit() public {}
 }
 
