@@ -37,6 +37,14 @@
     0x20 0x00 return   // [],<>
 }
 
+#define macro CLEAR_BIT_WRAPPER() = {
+    0x04 calldataload  //   [1]
+    0x24 calldataload  // [0,1]
+    CLEAR_BIT()        // [set?]
+    0x00 mstore        // [],<set?>
+    0x20 0x00 return   // [],<>
+}
+
 #define macro MAIN() = {
     0x00 calldataload 0xE0 shr
     dup1 __FUNC_SIG(singleBitMask) eq singleBitMask jumpi
@@ -44,6 +52,7 @@
     dup1 __FUNC_SIG(toggleBit) eq toggleBit jumpi
     dup1 __FUNC_SIG(queryBit) eq queryBit jumpi
     dup1 __FUNC_SIG(setBit) eq setBit jumpi
+    dup1 __FUNC_SIG(clearBit) eq clearBit jumpi
 
 
     0x00 0x00 revert
@@ -58,5 +67,7 @@
         QUERY_BIT_WRAPPER()
     setBit:
         SET_BIT_WRAPPER()
+    clearBit:
+        CLEAR_BIT_WRAPPER()
 
 }

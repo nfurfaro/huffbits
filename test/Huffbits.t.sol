@@ -11,6 +11,7 @@ interface Huffbits {
     function toggleBit(uint256, uint256) external pure returns(uint256);
     function queryBit(uint256, uint256) external pure returns(uint256);
     function setBit(uint256, uint256) external pure returns(uint256);
+    function clearBit(uint256, uint256) external pure returns(uint256);
 }
 
 
@@ -86,6 +87,18 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.setBit(0, 63), 9223372036854775808);
         assertEq(huffbits.setBit(0xFFFFFFFEFFFFFFFF, 32), 0xFFFFFFFFFFFFFFFF);
         assertEq(huffbits.setBit(0xFFFFFFFFFFFFFFFF, 32), 0xFFFFFFFFFFFFFFFF);
+    }
+
+    function testClearBit() public {
+        assertEq(huffbits.clearBit(1, 0), 0);
+        assertEq(huffbits.clearBit(3, 1), 1);
+        assertEq(huffbits.clearBit(3, 0), 2);
+        assertEq(huffbits.clearBit(256, 8), 0);
+        assertEq(huffbits.clearBit(256, 7), 256);
+        assertEq(huffbits.clearBit(0xFFFFFFFFFFFFFFFF, 63), 0x7FFFFFFFFFFFFFFF);
+        assertEq(huffbits.clearBit(0xFFFFFFFFFFFFFFFF, 25), 0xFFFFFFFFFDFFFFFF);
+        assertEq(huffbits.clearBit(0x37DDFDDBBDDFBF7C, 47), 0x37DD7DDBBDDFBF7C);
+        assertEq(huffbits.clearBit(0x37DDFDDBBDDFBF7C, 14), 0x37DDFDDBBDDFBF7C);
     }
 }
 

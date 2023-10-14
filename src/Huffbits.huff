@@ -11,6 +11,7 @@
 #define function toggleBit(uint256, uint256) pure returns(uint256)
 #define function queryBit(uint256, uint256) pure returns(uint256)
 #define function setBit(uint256, uint256) pure returns(uint256)
+#define function clearBit(uint256, uint256) pure returns(uint256)
 
 /// Get a bitmask with a single `1` at the nth position.
 #define macro SINGLE_BITMASK() = takes(1) returns(1) {
@@ -50,11 +51,20 @@
     shr                    //           [shifted]
 }
 
-/// Given a bitmap, set a bit to "1" if not allready set, otherwise return the original bitmap.
+/// Given a bitmap, set a bit to "1" if not already set, otherwise return the original bitmap.
 #define macro SET_BIT() = takes(2) returns(1) {
     // input stack  //            [bit, bitmap]
     0x00            // [empty_map, bit, bitmap]
     swap1           // [bit, empty_map, bitmap]
     TOGGLE_BIT()    //           [mask, bitmap]
     or
+}
+
+/// Given a bitmap, clear a bit if set, otherwise return the original bitmap.
+#define macro CLEAR_BIT() = takes(2) returns(1) {
+    // input stack     //           [bit, bitmap]
+    0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                         // [full_map, bit, bitmap]
+    swap1              // [bit, full_map, bitmap]
+    TOGGLE_BIT()       //          [mask, bitmap]
+    and
 }
