@@ -7,7 +7,7 @@
 
 // Interface
 #define function singleBitMask(uint256) pure returns(uint256)
-// #define function multiMask(uint256) pure returns(uint256)
+#define function multiMask(uint256) pure returns(uint256)
 #define function toggleBit(uint256, uint256) pure returns(uint256)
 #define function queryBit(uint256, uint256) pure returns(uint256)
 
@@ -19,15 +19,15 @@
     shl                     // [shifted]
 }
 
-/// Get a bitmask of n ones.
-// #define macro MULTIMASK() = takes(1) returns(1) {
-//     // input stack                            [n]
-//     0x01                    //             [1, n]
-//     swap1                   //             [n, 1]
-//     dup2                    //          [n, 1, 1]
-//     shl                     //       [shifted, 1]
-//     sub                     //           [result]
-// }
+// Get a bitmask of n ones.
+#define macro MULTIMASK() = takes(1) returns(1) {
+    // input stack                            [n]
+    0x01                    //             [1, n]
+    swap1                   //             [n, 1]
+    dup2                    //          [n, 1, 1]
+    shl                     //       [shifted, 1]
+    sub                     //           [result]
+}
 
 /// Flip the nth bit in a bitmap.
 #define macro TOGGLE_BIT() = takes(2) returns(1) {

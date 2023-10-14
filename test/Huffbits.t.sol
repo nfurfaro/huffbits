@@ -7,7 +7,7 @@ import "forge-std/console.sol";
 
 interface Huffbits {
     function singleBitMask(uint256) external pure returns(uint256);
-    // function multiMask(uint256) external pure returns(uint256);
+    function multiMask(uint256) external pure returns(uint256);
     function toggleBit(uint256, uint256) external pure returns(uint256);
     function queryBit(uint256, uint256) external pure returns(uint256);
 }
@@ -60,8 +60,8 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.queryBit(max, 255), 1);
     }
 
-    // function testMultiMask() public {
-    //     assertEq(huffbits.multiMask(1), 1);
-    // }
+    function testMultiMask() public {
+        assertEq(huffbits.multiMask(1), 1);
+    }
 }
 
