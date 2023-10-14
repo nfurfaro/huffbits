@@ -10,6 +10,7 @@ interface Huffbits {
     function multiMask(uint256) external pure returns(uint256);
     function toggleBit(uint256, uint256) external pure returns(uint256);
     function queryBit(uint256, uint256) external pure returns(uint256);
+    function setBit(uint256, uint256) external pure returns(uint256);
 }
 
 
@@ -74,6 +75,17 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.multiMask(256), MAX);
     }
 
-    function testSetBit() public {}
+    function testSetBit() public {
+        assertEq(huffbits.setBit(0, 0), 1);
+        assertEq(huffbits.setBit(1, 0), 1);
+        assertEq(huffbits.setBit(1, 1), 3);
+        assertEq(huffbits.setBit(0, 4), 16);
+        assertEq(huffbits.setBit(0, 7), 128);
+        assertEq(huffbits.setBit(0, 16), 65536);
+        assertEq(huffbits.setBit(65536, 16), 65536);
+        assertEq(huffbits.setBit(0, 63), 9223372036854775808);
+        assertEq(huffbits.setBit(0xFFFFFFFEFFFFFFFF, 32), 0xFFFFFFFFFFFFFFFF);
+        assertEq(huffbits.setBit(0xFFFFFFFFFFFFFFFF, 32), 0xFFFFFFFFFFFFFFFF);
+    }
 }
 
