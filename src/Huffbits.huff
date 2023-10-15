@@ -2,7 +2,7 @@
 /// @notice SPDX-License-Identifier: Unlicencse
 /// @author furnic <https://github.com/nfurfaro>
 /// @notice Library of utils for bitwise operations
-/// @notice Ported from Sway-Bits: <https://github.com/nfurfaro/sway-bits>
+/// @notice Adapted from from Sway-Bits: <https://github.com/nfurfaro/sway-bits>
 
 
 // Interface
