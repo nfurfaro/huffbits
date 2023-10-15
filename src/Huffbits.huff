@@ -15,6 +15,7 @@
 #define function queryBit(uint256, uint256) pure returns(uint256)
 #define function writeNibble(uint256, uint256, uint256) pure returns(uint256)
 #define function clearNibble(uint256, uint256) pure returns(uint256)
+#define function queryNibble(uint256, uint256) pure returns(uint256)
 
 #define constant MAX = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
@@ -122,4 +123,19 @@
     // input stack     //            [index, bitmap]
     NIBBLEMASK()       //             [mask, bitmap]
     and
+}
+
+/// Given a bitmap and an index, return the value of the specified nibble.
+#define macro QUERY_NIBBLE() = takes(2) returns(1) {
+    // input stack     //            [index, bitmap]
+    dup1               //     [index, index, bitmap]
+    swap2              //     [bitmap, index, index]
+    swap1              //     [index, bitmap, index]
+    NIBBLEMASK()       //      [mask, bitmap, index]
+    not                //   [negated, bitmap, index]
+    and                //               [and, index]
+    swap1              //               [index, and]
+    0x04               //            [4, index, and]
+    mul                //                [prod, and]
+    shr                //                  [shifted]
 }

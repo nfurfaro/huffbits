@@ -69,6 +69,14 @@
     0x20 0x00 return
 }
 
+#define macro QUERY_NIBBLE_WRAPPER() = {
+    0x04 calldataload  //         [arg1]
+    0x24 calldataload  //   [arg2, arg1]
+    QUERY_NIBBLE()        //   [result]
+    0x00 mstore
+    0x20 0x00 return
+}
+
 #define macro MAIN() = {
     0x00 calldataload 0xE0 shr
     dup1 __FUNC_SIG(bitMask) eq bitMask jumpi
@@ -80,6 +88,7 @@
     dup1 __FUNC_SIG(queryBit) eq queryBit jumpi
     dup1 __FUNC_SIG(writeNibble) eq writeNibble jumpi
     dup1 __FUNC_SIG(clearNibble) eq clearNibble jumpi
+    dup1 __FUNC_SIG(queryNibble) eq queryNibble jumpi
 
 
     0x00 0x00 revert
@@ -102,4 +111,6 @@
         WRITE_NIBBLE_WRAPPER()
     clearNibble:
         CLEAR_NIBBLE_WRAPPER()
+    queryNibble:
+        QUERY_NIBBLE_WRAPPER()
 }
