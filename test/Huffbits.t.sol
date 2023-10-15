@@ -56,6 +56,10 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.nibbleMask(63), 0x0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     }
 
+    function testFailNibbleMask() public {
+        huffbits.nibbleMask(64);
+    }
+
     function testByteMask() public {
         assertEq(huffbits.byteMask(0), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00);
         assertEq(huffbits.byteMask(1), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FF);
@@ -63,6 +67,10 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.byteMask(3), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFF);
         assertEq(huffbits.byteMask(17), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
         assertEq(huffbits.byteMask(31), 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+    }
+
+    function testFailByteMask() public {
+        huffbits.byteMask(32);
     }
 
     function testMultiMask() public {
