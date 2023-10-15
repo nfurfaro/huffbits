@@ -19,6 +19,7 @@ interface Huffbits {
     function queryNibble(uint256, uint256) external pure returns(uint256);
     function clearByte(uint256, uint256) external pure returns(uint256);
     function writeByte(uint256, uint256, uint256) external pure returns(uint256);
+    function queryByte(uint256, uint256) external pure returns(uint256);
 }
 
 
@@ -169,7 +170,11 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.writeByte(17, 0x77, MAX), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF77FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     }
 
-    // queryByte
+    function testQueryByte() public {
+        uint256 index = 17;
+        uint bitmap = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF77FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
+        assertEq(huffbits.queryByte(bitmap, index), 0x77);
+    }
 
 }
 

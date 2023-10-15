@@ -101,6 +101,14 @@
     0x20 0x00 return
 }
 
+#define macro QUERY_BYTE_WRAPPER() = {
+    0x04 calldataload   //        [arg1]
+    0x24 calldataload   //  [arg2, arg1]
+    QUERY_BYTE()      //      [result]
+    0x00 mstore
+    0x20 0x00 return
+}
+
 #define macro MAIN() = {
     0x00 calldataload 0xE0 shr
     dup1 __FUNC_SIG(bitMask) eq bitMask jumpi
@@ -116,6 +124,7 @@
     dup1 __FUNC_SIG(queryNibble) eq queryNibble jumpi
     dup1 __FUNC_SIG(clearByte) eq clearByte jumpi
     dup1 __FUNC_SIG(writeByte) eq writeByte jumpi
+    dup1 __FUNC_SIG(queryByte) eq queryByte jumpi
 
 
     0x00 0x00 revert
@@ -146,4 +155,6 @@
         CLEAR_BYTE_WRAPPER()
     writeByte:
         WRITE_BYTE_WRAPPER()
+    queryByte:
+        QUERY_BYTE_WRAPPER()
 }
