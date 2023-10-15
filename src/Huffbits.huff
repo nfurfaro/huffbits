@@ -17,6 +17,7 @@
 #define function writeNibble(uint256, uint256, uint256) pure returns(uint256)
 #define function clearNibble(uint256, uint256) pure returns(uint256)
 #define function queryNibble(uint256, uint256) pure returns(uint256)
+#define function clearByte(uint256, uint256) pure returns(uint256)
 
 #define constant MAX = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
@@ -172,4 +173,11 @@
     0x04               //            [4, index, and]
     mul                //                [prod, and]
     shr                //                  [shifted]
+}
+
+/// Given a bitmap, clear a nibble if set, otherwise return the original bitmap.
+#define macro CLEAR_BYTE() = takes(2) returns(1) {
+    // input stack     //          [index, bitmap]
+    BYTEMASK()       //             [mask, bitmap]
+    and
 }
