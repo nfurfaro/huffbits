@@ -7,9 +7,9 @@ import "forge-std/console.sol";
 
 interface Huffbits {
     function bitMask(uint256) external pure returns(uint256);
-    function multiMask(uint256) external pure returns(uint256);
     function nibbleMask(uint256) external pure returns(uint256);
     function byteMask(uint256) external pure returns(uint256);
+    function multiMask(uint256) external pure returns(uint256);
     function setBit(uint256, uint256) external pure returns(uint256);
     function clearBit(uint256, uint256) external pure returns(uint256);
     function toggleBit(uint256, uint256) external pure returns(uint256);
@@ -45,29 +45,24 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.bitMask(0x3F), 0x8000000000000000);
     }
 
-    function testToggleBit() public {
-        assertEq(huffbits.toggleBit(0x0, 0x0), 0x1);
-        assertEq(huffbits.toggleBit(0x0, 0x1), 0x2);
-        assertEq(huffbits.toggleBit(0x0, 42), 4398046511104);
-        assertEq(huffbits.toggleBit(1, 0), 0);
-        assertEq(huffbits.toggleBit(2, 0), 3);
-        assertEq(huffbits.toggleBit(2, 1), 0);
-        assertEq(huffbits.toggleBit(1024, 0), 1025);
+    function testNibbleMask() public { // initial gas: 11565)
+        assertEq(huffbits.nibbleMask(0), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0);
+        assertEq(huffbits.nibbleMask(1), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0F);
+        assertEq(huffbits.nibbleMask(2), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FF);
+        assertEq(huffbits.nibbleMask(3), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFF);
+        assertEq(huffbits.nibbleMask(17), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFFFFFFFFFFFFFFFF);
+        assertEq(huffbits.nibbleMask(32), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+        assertEq(huffbits.nibbleMask(55), 0xFFFFFFFF0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+        assertEq(huffbits.nibbleMask(63), 0x0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     }
 
-    function testQueryBit() public {
-        assertEq(huffbits.queryBit(0, 0), 0);
-        assertEq(huffbits.queryBit(0, 1), 0);
-        assertEq(huffbits.queryBit(0, 64), 0);
-        assertEq(huffbits.queryBit(0, 255), 0);
-        assertEq(huffbits.queryBit(1, 0), 1);
-        assertEq(huffbits.queryBit(1025, 0), 1);
-        assertEq(huffbits.queryBit(1025, 10), 1);
-        assertEq(huffbits.queryBit(1025, 11), 0);
-        assertEq(huffbits.queryBit(MAX, 0), 1);
-        assertEq(huffbits.queryBit(MAX, 64), 1);
-        assertEq(huffbits.queryBit(MAX, 128), 1);
-        assertEq(huffbits.queryBit(MAX, 255), 1);
+    function testByteMask() public {
+        assertEq(huffbits.byteMask(0), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00);
+        assertEq(huffbits.byteMask(1), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FF);
+        assertEq(huffbits.byteMask(2), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFF);
+        assertEq(huffbits.byteMask(3), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFF);
+        assertEq(huffbits.byteMask(17), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+        assertEq(huffbits.byteMask(31), 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     }
 
     function testMultiMask() public {
@@ -109,21 +104,29 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.clearBit(0x37DDFDDBBDDFBF7C, 14), 0x37DDFDDBBDDFBF7C);
     }
 
-    function testNibbleMask() public { // initial gas: 11565)
-        assertEq(huffbits.nibbleMask(0), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0);
-        assertEq(huffbits.nibbleMask(1), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0F);
-        assertEq(huffbits.nibbleMask(2), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FF);
-        assertEq(huffbits.nibbleMask(3), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFF);
-        assertEq(huffbits.nibbleMask(17), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFFFFFFFFFFFFFFFF);
-        assertEq(huffbits.nibbleMask(32), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
-        assertEq(huffbits.nibbleMask(55), 0xFFFFFFFF0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
-        assertEq(huffbits.nibbleMask(63), 0x0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+    function testToggleBit() public {
+        assertEq(huffbits.toggleBit(0x0, 0x0), 0x1);
+        assertEq(huffbits.toggleBit(0x0, 0x1), 0x2);
+        assertEq(huffbits.toggleBit(0x0, 42), 4398046511104);
+        assertEq(huffbits.toggleBit(1, 0), 0);
+        assertEq(huffbits.toggleBit(2, 0), 3);
+        assertEq(huffbits.toggleBit(2, 1), 0);
+        assertEq(huffbits.toggleBit(1024, 0), 1025);
     }
 
-    function testClearNibble() public {
-        assertEq(huffbits.clearNibble(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF, 0), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0);
-        assertEq(huffbits.clearNibble(1, 0), 0);
-
+    function testQueryBit() public {
+        assertEq(huffbits.queryBit(0, 0), 0);
+        assertEq(huffbits.queryBit(0, 1), 0);
+        assertEq(huffbits.queryBit(0, 64), 0);
+        assertEq(huffbits.queryBit(0, 255), 0);
+        assertEq(huffbits.queryBit(1, 0), 1);
+        assertEq(huffbits.queryBit(1025, 0), 1);
+        assertEq(huffbits.queryBit(1025, 10), 1);
+        assertEq(huffbits.queryBit(1025, 11), 0);
+        assertEq(huffbits.queryBit(MAX, 0), 1);
+        assertEq(huffbits.queryBit(MAX, 64), 1);
+        assertEq(huffbits.queryBit(MAX, 128), 1);
+        assertEq(huffbits.queryBit(MAX, 255), 1);
     }
 
     function testWriteNibble() public {
@@ -138,26 +141,17 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.writeNibble(17, 0xc, MAX), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFcFFFFFFFFFFFFFFFFF);
     }
 
+    function testClearNibble() public {
+        assertEq(huffbits.clearNibble(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF, 0), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0);
+        assertEq(huffbits.clearNibble(1, 0), 0);
+
+    }
+
     function testQueryNibble() public {
         uint256 index = 0x11;
         uint bitmap = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFcFFFFFFFFFFFFFFFFF;
         assertEq(huffbits.queryNibble(bitmap, index), 0xc);
         assertEq(huffbits.queryNibble(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF, 34), 0x0);
-    }
-
-    function testByteMask() public {
-        assertEq(huffbits.byteMask(0), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00);
-        assertEq(huffbits.byteMask(1), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FF);
-        assertEq(huffbits.byteMask(2), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFF);
-        assertEq(huffbits.byteMask(3), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFF);
-        assertEq(huffbits.byteMask(17), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
-        assertEq(huffbits.byteMask(31), 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
-    }
-
-    function testClearByte() public {
-        assertEq(huffbits.clearByte(1, 0), 0);
-        assertEq(huffbits.clearByte(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF, 3), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFF);
-        assertEq(huffbits.clearByte(0xFdFFFFFFFFFFFbFFFFFFFFaFFFFFFFF12FFFFFFFFF7FFFFFFFbFFFFFFFF3FFF0, 15), 0xFdFFFFFFFFFFFbFFFFFFFFaFFFFFFFF100FFFFFFFF7FFFFFFFbFFFFFFFF3FFF0);
     }
 
     function testWriteByte() public {
@@ -170,11 +164,16 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.writeByte(17, 0x77, MAX), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF77FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     }
 
+    function testClearByte() public {
+        assertEq(huffbits.clearByte(1, 0), 0);
+        assertEq(huffbits.clearByte(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF, 3), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFF);
+        assertEq(huffbits.clearByte(0xFdFFFFFFFFFFFbFFFFFFFFaFFFFFFFF12FFFFFFFFF7FFFFFFFbFFFFFFFF3FFF0, 15), 0xFdFFFFFFFFFFFbFFFFFFFFaFFFFFFFF100FFFFFFFF7FFFFFFFbFFFFFFFF3FFF0);
+    }
+
     function testQueryByte() public {
         uint256 index = 17;
         uint bitmap = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF77FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
         assertEq(huffbits.queryByte(bitmap, index), 0x77);
     }
-
 }
 
