@@ -18,6 +18,7 @@ interface Huffbits {
     function clearNibble(uint256, uint256) external pure returns(uint256);
     function queryNibble(uint256, uint256) external pure returns(uint256);
     function clearByte(uint256, uint256) external pure returns(uint256);
+    function writeByte(uint256, uint256, uint256) external pure returns(uint256);
 }
 
 
@@ -154,10 +155,20 @@ contract HuffbitsTest is Test {
 
     function testClearByte() public {
         assertEq(huffbits.clearByte(1, 0), 0);
+        assertEq(huffbits.clearByte(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF, 3), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFF);
+        assertEq(huffbits.clearByte(0xFdFFFFFFFFFFFbFFFFFFFFaFFFFFFFF12FFFFFFFFF7FFFFFFFbFFFFFFFF3FFF0, 15), 0xFdFFFFFFFFFFFbFFFFFFFFaFFFFFFFF100FFFFFFFF7FFFFFFFbFFFFFFFF3FFF0);
     }
 
-    // clearByte
-    // WriteByte
+    function testWriteByte() public {
+        uint256 index = 0;
+        uint256 bitmap = 0x0;
+        uint256 newBits = 0x1;
+        assertEq(huffbits.writeByte(index, newBits, bitmap), 0x1);
+        assertEq(huffbits.writeByte(3, 0xb7, MAX), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFb7FFFFFF);
+        assertEq(huffbits.writeByte(31, 0x55, MAX), 0x55FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+        assertEq(huffbits.writeByte(17, 0x77, MAX), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF77FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+    }
+
     // queryByte
 
 }
