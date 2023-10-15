@@ -9,6 +9,7 @@ interface Huffbits {
     function bitMask(uint256) external pure returns(uint256);
     function multiMask(uint256) external pure returns(uint256);
     function nibbleMask(uint256) external pure returns(uint256);
+    function byteMask(uint256) external pure returns(uint256);
     function setBit(uint256, uint256) external pure returns(uint256);
     function clearBit(uint256, uint256) external pure returns(uint256);
     function toggleBit(uint256, uint256) external pure returns(uint256);
@@ -138,7 +139,10 @@ contract HuffbitsTest is Test {
         uint256 index = 0x11;
         uint bitmap = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFcFFFFFFFFFFFFFFFFF;
         assertEq(huffbits.queryNibble(bitmap, index), 0xc);
+        assertEq(huffbits.queryNibble(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF, 34), 0x0);
     }
+
+    function testByteMask() public {}
 
     // byteMask
     // clearByte
