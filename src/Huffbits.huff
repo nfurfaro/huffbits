@@ -25,20 +25,19 @@
 
 /// Get a bitmask with a single `1` at the nth position.
 #define macro BITMASK() = takes(1) returns(1) {
-    // input stack          //                 [shift]
-    0x01                    //              [1, shift]
-    swap1                   //              [shift, 1]
-    shl                     //               [shifted]
+    // input stack          //          [shift]
+    0x01                    //       [1, shift]
+    swap1                   //       [shift, 1]
+    shl                     //        [shifted]
 }
 
 /// Generate a mask for clearing a nibble at the nth index.
 /// eg: NIBBLEMASK(3) => 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFF;
 #define macro NIBBLEMASK() = takes(1) returns(1) {
-    // input stack          //                 [n]
-    // enforce n < 64
-    0x40                    //             [64, n]
-    dup2                    //          [n, 64, n]
-    lt                      //            [lt?, n]
+    // input stack                             [n]
+    0x40          //                       [64, n]
+    dup2          //                    [n, 64, n]
+    lt            //                      [lt?, n]  enforce n < 64 !
     continue jumpi
     0x00 0x00 revert
 
@@ -66,36 +65,35 @@
 /// Generate a mask for clearing a BYTE at the nth index.
 /// eg: BYTEMASK(3) => 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFF;
 #define macro BYTEMASK() = takes(1) returns(1) {
-    // input stack                            [n]
-    // enforce n < 32
-    0x20                    //             [32, n]
-    dup2                    //          [n, 32, n]
-    lt                      //            [lt?, n]
+    // input stack                           [n]
+    0x20          //                     [32, n]
+    dup2          //                  [n, 32, n]
+    lt            //                    [lt?, n]  enforce n < 32 !
     continue jumpi
     0x00 0x00 revert
 
-    continue:     //                           [n]
-        [MAX]     //                      [max, n]
-        dup1      //                 [max, max, n]
-        dup3      //              [n, max, max, n]
-        0x08      //           [8, n, max, max, n]
-        mul       //           [prod, max, max, n]
-        0x08      //        [8, prod, max, max, n]
-        add       //            [sum, max, max, n]
-        shl       //               [mask1, max, n]
-        swap1     //               [max, mask1, n]
-        0x08      //            [8, max, mask1, n]
-        dup4      //         [n, 8, max, mask1, n]
-        mul       //         [prod, max, mask1, n]
-        0x100     //    [256, prod, max, mask1, n]
-        sub       //         [diff, max, mask1, n]
-        shr       //             [mask2, mask1, n]
-        or        //                   [result, n]
-        swap1     //                   [n, result]
-        pop       //                      [result]
+    continue:     //                         [n]
+        [MAX]     //                    [max, n]
+        dup1      //               [max, max, n]
+        dup3      //            [n, max, max, n]
+        0x08      //         [8, n, max, max, n]
+        mul       //         [prod, max, max, n]
+        0x08      //      [8, prod, max, max, n]
+        add       //          [sum, max, max, n]
+        shl       //             [mask1, max, n]
+        swap1     //             [max, mask1, n]
+        0x08      //          [8, max, mask1, n]
+        dup4      //       [n, 8, max, mask1, n]
+        mul       //       [prod, max, mask1, n]
+        0x100     //  [256, prod, max, mask1, n]
+        sub       //       [diff, max, mask1, n]
+        shr       //           [mask2, mask1, n]
+        or        //                 [result, n]
+        swap1     //                 [n, result]
+        pop       //                    [result]
 }
 
-// Get a bitmask of n `1`s begining at the least significant bit.
+// Get a bitmask of n ones begining at the least significant bit.
 #define macro MULTIMASK() = takes(1) returns(1) {
     // input stack                            [n]
     0x01                    //             [1, n]
@@ -106,78 +104,78 @@
     sub                     //           [result]
 }
 
-/// Given a bitmap, set a bit to "1" if not already set, otherwise return the original bitmap.
+/// Given a bitmap, set a bit to 1 if not already set, otherwise return the original bitmap.
 #define macro SET_BIT() = takes(2) returns(1) {
-    // input stack  //            [bit, bitmap]
-    0x00            // [empty_map, bit, bitmap]
-    swap1           // [bit, empty_map, bitmap]
+    // input stack  //              [n, bitmap]
+    0x00            //   [empty_map, n, bitmap]
+    swap1           //   [n, empty_map, bitmap]
     TOGGLE_BIT()    //           [mask, bitmap]
     or
 }
 
 /// Given a bitmap, clear a bit if set, otherwise return the original bitmap.
 #define macro CLEAR_BIT() = takes(2) returns(1) {
-    // input stack     //           [bit, bitmap]
-    [MAX]              // [full_map, bit, bitmap]
-    swap1              // [bit, full_map, bitmap]
+    // input stack     //             [n, bitmap]
+    [MAX]              //   [full_map, n, bitmap]
+    swap1              //   [n, full_map, bitmap]
     TOGGLE_BIT()       //          [mask, bitmap]
     and
 }
 
 /// Flip the nth bit in a bitmap.
 #define macro TOGGLE_BIT() = takes(2) returns(1) {
-    // input stack          //       [bit, bitmap]
+    // input stack          //         [n, bitmap]
     BITMASK()               //      [mask, bitmap]
     xor                     //            [result]
 }
 
-/// Given a bitmap, check whether a bit is set.
+/// Given a bitmap, check whether a bit n is set.
 #define macro QUERY_BIT() = takes(2) returns(1) {
-    // input stack         //       [bit, bitmap]
-    dup1                   //  [bit, bit, bitmap]
-    swap2                  //  [bitmap, bit, bit]
-    swap1                  //  [bit, bitmap, bit]
-    BITMASK()              // [mask, bitmap, bit]
-    and                    //          [and, bit]
-    swap1                  //          [bit, and]
+    // input stack         //         [n, bitmap]
+    dup1                   //      [n, n, bitmap]
+    swap2                  //      [bitmap, n, n]
+    swap1                  //      [n, bitmap, n]
+    BITMASK()              //   [mask, bitmap, n]
+    and                    //            [and, n]
+    swap1                  //            [n, and]
     shr                    //           [shifted]
 }
 
-/// Given a bitmap, an index and 4 bits, overwrite a nibble in the bitmap.
+/// Given a bitmap, an index n and 4 bits, overwrite a nibble in the bitmap.
 #define macro WRITE_NIBBLE() = takes(3) returns(1) {
-    // input stack             [bitmap, bits, index]
-    dup3            //  [index, bitmap, bits, index]
-    CLEAR_NIBBLE()  //        [cleared, bits, index]
-    swap2           //        [index, bits, cleared]
-    0x04            //     [4, index, bits, cleared]
-    mul             //         [prod, bits, cleared]
+    // input stack                [bitmap, n, index]
+    dup3            //     [index, bitmap, n, index]
+    CLEAR_NIBBLE()  //           [cleared, n, index]
+    swap2           //           [index, n, cleared]
+    0x04            //        [4, index, n, cleared]
+    mul             //            [prod, n, cleared]
     shl             //            [shifted, cleared]
     or              //                      [result]
 }
 
-/// Given a bitmap, clear a nibble if set, otherwise return the original bitmap.
+/// Given a bitmap and an index n, clear a nibble if set, otherwise return the original bitmap.
 #define macro CLEAR_NIBBLE() = takes(2) returns(1) {
-    // input stack     //            [index, bitmap]
+    // input stack     //                [n, bitmap]
     NIBBLEMASK()       //             [mask, bitmap]
     and
 }
 
-/// Given a bitmap and an index, return the value of the specified nibble.
+/// Given a bitmap and an index n, return the value of the specified nibble.
 #define macro QUERY_NIBBLE() = takes(2) returns(1) {
-    // input stack     //            [index, bitmap]
-    dup1               //     [index, index, bitmap]
-    swap2              //     [bitmap, index, index]
-    swap1              //     [index, bitmap, index]
-    NIBBLEMASK()       //      [mask, bitmap, index]
-    not                //   [negated, bitmap, index]
-    and                //               [and, index]
-    swap1              //               [index, and]
-    0x04               //            [4, index, and]
+    // input stack     //                [n, bitmap]
+    dup1               //             [n, n, bitmap]
+    swap2              //             [bitmap, n, n]
+    swap1              //             [n, bitmap, n]
+    NIBBLEMASK()       //          [mask, bitmap, n]
+    not                //       [negated, bitmap, n]
+    and                //                   [and, n]
+    swap1              //                   [n, and]
+    0x04               //                [4, n, and]
     mul                //                [prod, and]
     shr                //                  [shifted]
 }
 
-/// Given a bitmap, clear a nibble if set, otherwise return the original bitmap.
+/// Given a bitmap and an index n, clear a nibble if set, otherwise return the original bitmap.
 #define macro CLEAR_BYTE() = takes(2) returns(1) {
     // input stack     //          [index, bitmap]
     BYTEMASK()       //             [mask, bitmap]
@@ -196,17 +194,17 @@
     or             //                     [result]
 }
 
-/// Given a bitmap and an index, return the value of the specified nibble.
+/// Given a bitmap and an index n, returns the value of the specified nibble.
 #define macro QUERY_BYTE() = takes(2) returns(1) {
-    // input stack     //            [index, bitmap]
-    dup1               //     [index, index, bitmap]
-    swap2              //     [bitmap, index, index]
-    swap1              //     [index, bitmap, index]
-    BYTEMASK()       //      [mask, bitmap, index]
-    not                //   [negated, bitmap, index]
-    and                //               [and, index]
-    swap1              //               [index, and]
-    0x08               //            [4, index, and]
-    mul                //                [prod, and]
-    shr                //                  [shifted]
+    // input stack     //              [n, bitmap]
+    dup1               //           [n, n, bitmap]
+    swap2              //           [bitmap, n, n]
+    swap1              //           [n, bitmap, n]
+    BYTEMASK()         //        [mask, bitmap, n]
+    not                //     [negated, bitmap, n]
+    and                //                 [and, n]
+    swap1              //                 [n, and]
+    0x08               //              [4, n, and]
+    mul                //              [prod, and]
+    shr                //                [shifted]
 }
