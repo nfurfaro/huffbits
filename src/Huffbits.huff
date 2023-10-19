@@ -22,6 +22,7 @@
 #define function queryByte(uint256, uint256) pure returns(uint256)
 
 #define constant MAX = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+#define error IllegalShift()
 
 /// Get a bitmask with a single `1` at the nth position.
 #define macro BITMASK() = takes(1) returns(1) {
@@ -39,7 +40,9 @@
     dup2          //                    [n, 64, n]
     lt            //                      [lt?, n]  enforce n < 64 !
     continue jumpi
-    0x00 0x00 revert
+        __ERROR(IllegalShift)   //       [error]
+        0x00 mstore             //            []
+        0x04 0x00 revert
 
     continue:     //                           [n]
         [MAX]     //                      [max, n]
@@ -70,7 +73,9 @@
     dup2          //                  [n, 32, n]
     lt            //                    [lt?, n]  enforce n < 32 !
     continue jumpi
-    0x00 0x00 revert
+        __ERROR(IllegalShift)   //       [error]
+        0x00 mstore             //            []
+        0x04 0x00 revert
 
     continue:     //                         [n]
         [MAX]     //                    [max, n]

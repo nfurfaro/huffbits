@@ -27,6 +27,7 @@ contract HuffbitsTest is Test {
     /// @dev Address of the Huffbits contract
     Huffbits public huffbits;
     uint constant MAX = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
+    error IllegalShift();
 
     function setUp() public {
         string memory wrappers = vm.readFile("test/mocks/HuffbitsWrappers.huff");
@@ -34,7 +35,7 @@ contract HuffbitsTest is Test {
     }
 
     /// @dev Ensure that a single bit can be set.
-    function testBitMask() public {
+    function test_BitMask() public {
         assertEq(huffbits.bitMask(0x0), 0x1);
         assertEq(huffbits.bitMask(0x1), 0x2);
         assertEq(huffbits.bitMask(0x2), 0x4);
@@ -45,7 +46,7 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.bitMask(0x3F), 0x8000000000000000);
     }
 
-    function testNibbleMask() public { // initial gas: 11565)
+    function test_NibbleMask() public { // initial gas: 11565)
         assertEq(huffbits.nibbleMask(0), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0);
         assertEq(huffbits.nibbleMask(1), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0F);
         assertEq(huffbits.nibbleMask(2), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FF);
@@ -56,11 +57,12 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.nibbleMask(63), 0x0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     }
 
-    function testFailNibbleMask() public {
+    function test_NibbleMask_with_bad_shift() public {
+        vm.expectRevert(IllegalShift.selector);
         huffbits.nibbleMask(64);
     }
 
-    function testByteMask() public {
+    function test_ByteMask() public {
         assertEq(huffbits.byteMask(0), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00);
         assertEq(huffbits.byteMask(1), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FF);
         assertEq(huffbits.byteMask(2), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFF);
@@ -69,11 +71,12 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.byteMask(31), 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     }
 
-    function testFailByteMask() public {
+    function test_ByteMask_with_bad_shift() public {
+        vm.expectRevert(IllegalShift.selector);
         huffbits.byteMask(32);
     }
 
-    function testMultiMask() public {
+    function test_MultiMask() public {
         assertEq(huffbits.multiMask(0), 0);
         assertEq(huffbits.multiMask(1), 1);
         assertEq(huffbits.multiMask(2), 3);
@@ -87,7 +90,7 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.multiMask(256), MAX);
     }
 
-    function testSetBit() public {
+    function test_SetBit() public {
         assertEq(huffbits.setBit(0, 0), 1);
         assertEq(huffbits.setBit(1, 0), 1);
         assertEq(huffbits.setBit(1, 1), 3);
@@ -100,7 +103,7 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.setBit(0xFFFFFFFFFFFFFFFF, 32), 0xFFFFFFFFFFFFFFFF);
     }
 
-    function testClearBit() public {
+    function test_ClearBit() public {
         assertEq(huffbits.clearBit(1, 0), 0);
         assertEq(huffbits.clearBit(3, 1), 1);
         assertEq(huffbits.clearBit(3, 0), 2);
@@ -112,7 +115,7 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.clearBit(0x37DDFDDBBDDFBF7C, 14), 0x37DDFDDBBDDFBF7C);
     }
 
-    function testToggleBit() public {
+    function test_ToggleBit() public {
         assertEq(huffbits.toggleBit(0x0, 0x0), 0x1);
         assertEq(huffbits.toggleBit(0x0, 0x1), 0x2);
         assertEq(huffbits.toggleBit(0x0, 42), 4398046511104);
@@ -122,7 +125,7 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.toggleBit(1024, 0), 1025);
     }
 
-    function testQueryBit() public {
+    function test_QueryBit() public {
         assertEq(huffbits.queryBit(0, 0), 0);
         assertEq(huffbits.queryBit(0, 1), 0);
         assertEq(huffbits.queryBit(0, 64), 0);
@@ -137,7 +140,7 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.queryBit(MAX, 255), 1);
     }
 
-    function testWriteNibble() public {
+    function test_WriteNibble() public {
         uint256 index = 0;
         uint256 bitmap = 0x0;
         uint256 newBits = 0x1;
@@ -149,20 +152,20 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.writeNibble(17, 0xc, MAX), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFcFFFFFFFFFFFFFFFFF);
     }
 
-    function testClearNibble() public {
+    function test_ClearNibble() public {
         assertEq(huffbits.clearNibble(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF, 0), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0);
         assertEq(huffbits.clearNibble(1, 0), 0);
 
     }
 
-    function testQueryNibble() public {
+    function test_QueryNibble() public {
         uint256 index = 0x11;
         uint bitmap = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFcFFFFFFFFFFFFFFFFF;
         assertEq(huffbits.queryNibble(bitmap, index), 0xc);
         assertEq(huffbits.queryNibble(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF, 34), 0x0);
     }
 
-    function testWriteByte() public {
+    function test_WriteByte() public {
         uint256 index = 0;
         uint256 bitmap = 0x0;
         uint256 newBits = 0x1;
@@ -172,13 +175,13 @@ contract HuffbitsTest is Test {
         assertEq(huffbits.writeByte(17, 0x77, MAX), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF77FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     }
 
-    function testClearByte() public {
+    function test_ClearByte() public {
         assertEq(huffbits.clearByte(1, 0), 0);
         assertEq(huffbits.clearByte(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF, 3), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFF);
         assertEq(huffbits.clearByte(0xFdFFFFFFFFFFFbFFFFFFFFaFFFFFFFF12FFFFFFFFF7FFFFFFFbFFFFFFFF3FFF0, 15), 0xFdFFFFFFFFFFFbFFFFFFFFaFFFFFFFF100FFFFFFFF7FFFFFFFbFFFFFFFF3FFF0);
     }
 
-    function testQueryByte() public {
+    function test_QueryByte() public {
         uint256 index = 17;
         uint bitmap = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF77FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
         assertEq(huffbits.queryByte(bitmap, index), 0x77);
